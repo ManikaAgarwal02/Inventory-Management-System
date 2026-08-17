@@ -1,81 +1,51 @@
-import React, { useState } from "react";
-import axios from "axios";
-function UpdateRegisterCard({user,onClose,id}){
-    // console.log("Id is reached inside my popup: ",)
-const [formData,setFormData]=useState({
-    name:"",
-    email:""
-})
+import { useState } from "react"
+import api from "../../../utils/api"
+import styles from "../../../Styles/page.module.css"
 
-function handleChange(e){
-    setFormData({
-        ...formData,
-        [e.target.name]:e.target.value
+function UpdateRegisterCard({ user, onClose, id }) {
+    const [formData, setFormData] = useState({
+        name: user?.name || "",
+        email: user?.email || ""
     })
-}
 
+    function handleChange(e) {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value
+        })
+    }
 
-async function handleUpdate(e){
-    e.preventDefault();
-try {
- 
-    console.log("userId")
-    const response= await axios.put(`http://localhost:4000/api/user/update/${id._id}`,formData)
-    alert("Data has been sucessfully UPDATED")
-    setUser[{
-        name:"",
-        email:"",
-        password:""
-    }]
+    async function handleUpdate(e) {
+        e.preventDefault()
+        try {
+            await api.put(`/user/update/${id._id}`, formData)
+            onClose()
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
-    
- 
+    return (
+        <div className={styles.modalOverlay}>
+            <div className={styles.modalBox}>
+                <h3 className={styles.modalTitle}>Update Staff Member</h3>
 
-} catch (error) {
-    console.log(error)
-    // alert("Email Already Exists")
-}
-}
+                <div className={styles.formRow}>
+                    <label>Name</label>
+                    <input onChange={handleChange} type="text" name="name" placeholder="Update Name" value={formData.name} />
+                </div>
 
+                <div className={styles.formRow}>
+                    <label>Email</label>
+                    <input onChange={handleChange} type="text" name="email" placeholder="Update Email" value={formData.email} />
+                </div>
 
-return(
-    <>
-    <div style={{
-        position:"fixed",
-        inset:0,
-        background:"rgba(0,0,0,.5)",
-        display:"flex",
-        justifyContent:"center",
-        alignItems:"center"
-    }}>
-
-        <div style={{
-            width:"400px",
-            background:"white",
-            padding:"24px"
-
-        }}>
-        <h1>User Updation Form</h1>
-
-            <input onChange={handleChange} type="text" name="name" placeholder="Update Your Name" value={formData.name}/>
-        <br />
-        <br />
-
-
-        <input onChange={handleChange} type="text" name="email" placeholder="Update Your Email" value={formData.email} />
-        <br />
-        <br />
-<div style={{display:"flex",
-    justifyContent:"space-between"
-}}>
-            <button onClick={handleUpdate}>Update</button> 
-        <button onClick={onClose}>Close</button>
-</div>
-        
+                <div className={styles.modalActions}>
+                    <button className={styles.secondaryBtn} onClick={onClose}>Cancel</button>
+                    <button className={styles.primaryBtn} onClick={handleUpdate}>Save Changes</button>
+                </div>
+            </div>
         </div>
-        
-    </div>
-    </>
-)
+    )
 }
 export default UpdateRegisterCard;

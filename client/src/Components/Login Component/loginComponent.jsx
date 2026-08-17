@@ -1,60 +1,70 @@
-import React, { useState } from "react"
-import axios from "axios"
-function LoginComponent(){
-    const [user,setUser]=useState({
-        email:"",
-        password:""
-    })
+import { useState } from "react"
+import { useNavigate, Link } from "react-router-dom"
+import styles from "../../Styles/auth.module.css"
+import api from "../../utils/api"
+import { saveSession } from "../../utils/auth"
 
-    function handleChange(e){
+function LoginComponent() {
+    const navigate = useNavigate()
+    const [user, setUser] = useState({ email: "", password: "" })
+    const [error, setError] = useState("")
+    const [loading, setLoading] = useState(false)
+
+    function handleChange(e) {
         setUser({
             ...user,
-            [e.target.name]:e.target.value
+            [e.target.name]: e.target.value
         })
     }
 
-
-    async function handleSubmit(e,res,req){
+    async function handleSubmit(e) {
         e.preventDefault()
+        setError("")
+        setLoading(true)
 
         try {
-
-           const response= await axios.post("http://localhost:4000/api/loginRoute/api",user)
-        
-            alert(response.data.message)
-            console.log(response.data.token)
-
-            const token= response.data.token
-            console.log("got token:", token)
-
-
-            localStorage.setItem(
-                "Token",
-                token
-            )
-
-            
+            const response = await api.post("/loginRoute/api", user)
+            saveSession(response.data.token, response.data.user)
+            navigate("/dashboard")
         } catch (error) {
-            console.log(error.message)
-            console.log(error)
-
+            setError(error.response?.data?.message || "Unable To Log In")
+        } finally {
+            setLoading(false)
         }
     }
 
-    return(
-        <>
-        <section>
-            <h1>Login </h1>
+    return (
+        <section className={styles.wrapper}>
+            <div className={styles.card}>
+                <div className={styles.brand}>
+                    <p className={styles.brandTitle}>Stockroom</p>
+                    <p className={styles.brandSub}>Inventory Management</p>
+                </div>
 
-            <form onSubmit={handleSubmit}>
-                <input placeholder="Enter Your Email" type="text" name="email" value={user.email} onChange={handleChange}/>
-                <br />
-                <input placeholder="Enter Your Password" type="text" name="password" value={user.password} onChange={handleChange}/>
-                <br />
-                <button type="submit">Login</button>
-            </form>
+                <form onSubmit={handleSubmit}>
+                    <div className={styles.formRow}>
+                        <label>Email</label>
+                        <input type="email" name="email" placeholder="you@company.com" value={user.email} onChange={handleChange} required />
+                    </div>
+
+                    <div className={styles.formRow}>
+                        <label>Password</label>
+                        <input type="password" name="password" placeholder="Enter your password" value={user.password} onChange={handleChange} required />
+                    </div>
+
+                    {error && <p className={styles.errorText}>{error}</p>}
+
+                    <button className={styles.submitBtn} type="submit" disabled={loading}>
+                        {loading ? "Signing In..." : "Sign In"}
+                    </button>
+                </form>
+
+                <p className={styles.switchText}>
+                    New staff member? <Link to="/register">Create an account</Link>
+                </p>
+            </div>
         </section>
-        </>
     )
 }
+
 export default LoginComponent

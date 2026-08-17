@@ -1,0 +1,110 @@
+
+.sidebar {
+    width: 240px;
+    min-height: 100vh;
+    background: #161b22;
+    color: #c9d1d9;
+    display: flex;
+    flex-direction: column;
+    padding: 24px 0;
+    box-sizing: border-box;
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+.brand {
+    padding: 0 24px 24px 24px;
+    border-bottom: 1px solid #262d38;
+    margin-bottom: 16px;
+}
+
+.brandTitle {
+    font-family: "Georgia", serif;
+    font-size: 19px;
+    letter-spacing: 0.02em;
+    color: #f2c14e;
+    margin: 0;
+}
+
+.brandSub {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #6e7681;
+    margin-top: 4px;
+}
+
+.navList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex: 1;
+}
+
+.navLink {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 24px;
+    color: #8b949e;
+    text-decoration: none;
+    font-size: 14px;
+    border-left: 3px solid transparent;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.navLink:hover {
+    background: #1c232d;
+    color: #f0f3f6;
+}
+
+.navLinkActive {
+    color: #f2c14e;
+    background: #1c232d;
+    border-left: 3px solid #f2c14e;
+}
+
+.footer {
+    padding: 16px 24px 0 24px;
+    border-top: 1px solid #262d38;
+    margin-top: 16px;
+}
+
+.userName {
+    font-size: 13px;
+    color: #f0f3f6;
+    margin: 0;
+}
+
+.userRole {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #6e7681;
+    margin: 2px 0 12px 0;
+}
+
+.logoutBtn {
+    width: 100%;
+    padding: 8px 12px;
+    background: transparent;
+    border: 1px solid #30363d;
+    color: #c9d1d9;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.logoutBtn:hover {
+    border-color: #f2c14e;
+    color: #f2c14e;
+}
+
+.content {
+    margin-left: 240px;
+    min-height: 100vh;
+    background: #f5f6f8;
+    box-sizing: border-box;
+    width: calc(100% - 240px);
+}
