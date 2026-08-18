@@ -1,0 +1,271 @@
+.page {
+    padding: 32px 40px;
+}
+
+.pageHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.pageTitle {
+    font-family: "Georgia", serif;
+    font-size: 26px;
+    color: #161b22;
+    margin: 0;
+}
+
+.pageSubtitle {
+    font-size: 13px;
+    color: #6e7681;
+    margin-top: 4px;
+}
+
+.primaryBtn {
+    background: #161b22;
+    color: #f2c14e;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+}
+
+.primaryBtn:hover {
+    background: #262d38;
+}
+
+.secondaryBtn {
+    background: transparent;
+    color: #161b22;
+    border: 1px solid #d0d5db;
+    padding: 9px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.secondaryBtn:hover {
+    border-color: #161b22;
+}
+
+.dangerText {
+    color: #b3261e;
+}
+
+.card {
+    background: #ffffff;
+    border: 1px solid #e5e8ec;
+    border-radius: 10px;
+    padding: 20px 24px;
+}
+
+.statGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 16px;
+    margin-bottom: 28px;
+}
+
+.statCard {
+    background: #ffffff;
+    border: 1px solid #e5e8ec;
+    border-radius: 10px;
+    padding: 18px 20px;
+}
+
+.statLabel {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #6e7681;
+    margin: 0 0 8px 0;
+}
+
+.statValue {
+    font-family: "Georgia", serif;
+    font-size: 28px;
+    color: #161b22;
+    margin: 0;
+}
+
+.statValueAlert {
+    color: #b3261e;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #ffffff;
+    border: 1px solid #e5e8ec;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.table th {
+    text-align: left;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #6e7681;
+    background: #f5f6f8;
+    padding: 12px 16px;
+    border-bottom: 1px solid #e5e8ec;
+}
+
+.table td {
+    padding: 12px 16px;
+    font-size: 14px;
+    color: #24292f;
+    border-bottom: 1px solid #eef0f2;
+}
+
+.table tr:last-child td {
+    border-bottom: none;
+}
+
+.mono {
+    font-family: "Menlo", "Consolas", monospace;
+    font-size: 13px;
+}
+
+.badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.badgeIn {
+    background: #e5f6ea;
+    color: #1a7f37;
+}
+
+.badgeOut {
+    background: #fdecea;
+    color: #b3261e;
+}
+
+.badgeLow {
+    background: #fdecea;
+    color: #b3261e;
+}
+
+.badgeOk {
+    background: #e5f6ea;
+    color: #1a7f37;
+}
+
+.formRow {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 16px;
+}
+
+.formRow label {
+    font-size: 12px;
+    color: #6e7681;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.formRow input,
+.formRow select,
+.formRow textarea {
+    padding: 10px 12px;
+    border: 1px solid #d0d5db;
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: inherit;
+}
+
+.formRow input:focus,
+.formRow select:focus,
+.formRow textarea:focus {
+    outline: 2px solid #f2c14e;
+    outline-offset: 1px;
+    border-color: #f2c14e;
+}
+
+.formGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 0 20px;
+}
+
+.actionsCell {
+    display: flex;
+    gap: 8px;
+}
+
+.linkBtn {
+    background: none;
+    border: none;
+    color: #0969da;
+    cursor: pointer;
+    font-size: 13px;
+    padding: 0;
+}
+
+.linkBtn:hover {
+    text-decoration: underline;
+}
+
+.deleteBtn {
+    background: none;
+    border: none;
+    color: #b3261e;
+    cursor: pointer;
+    font-size: 13px;
+    padding: 0;
+}
+
+.deleteBtn:hover {
+    text-decoration: underline;
+}
+
+.emptyState {
+    text-align: center;
+    padding: 40px 20px;
+    color: #6e7681;
+    font-size: 14px;
+}
+
+.modalOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(22, 27, 34, 0.55);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 50;
+}
+
+.modalBox {
+    width: 420px;
+    max-width: 90vw;
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 28px;
+}
+
+.modalTitle {
+    font-family: "Georgia", serif;
+    font-size: 20px;
+    margin: 0 0 18px 0;
+    color: #161b22;
+}
+
+.modalActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 8px;
+}
