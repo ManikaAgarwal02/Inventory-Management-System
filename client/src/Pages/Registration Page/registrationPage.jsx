@@ -1,84 +1,83 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
+import Layout from '../../Components/Navbar/layout'
+import pageStyles from '../../Styles/page.module.css'
 import styles from './registrationPage.module.css'
-import Register from '../../Components/Registration Component/registrationFormComponent'
 import UserRegisterdCard from '../../Components/Registration Component/user Registered Card/registerCard'
-import axios from 'axios'
+import api from '../../utils/api'
 import UpdateRegisterCard from '../../Components/Registration Component/UseUpdationModal/editModal'
+
 function RegistrationPage() {
- const[showModal,setShowModal]=useState(false)
- const[selectedUser,setSelectedUser]=useState(null)
-//  console.log("Parent Component Selected User: ",selectedUser)
+  const [showModal, setShowModal] = useState(false)
+  const [selectedUser, setSelectedUser] = useState(null)
+  const [userData, setUserData] = useState([])
+  const [loading, setLoading] = useState(true)
 
-
-  const [userData, setUserData]=useState([])
-  // console.log(userData)
- async function fetchRegisteredUser(){
+  async function fetchRegisteredUser() {
     try {
-      const response= await axios.get("http://localhost:4000/api/getData")
-      
-      setUserData(response.data.data)
+      setLoading(true)
+      const response = await api.get("/getData")
+      setUserData(response.data.data || [])
     } catch (error) {
       console.log(error)
+    } finally {
+      setLoading(false)
     }
   }
 
-
-
-  async function handleDelete(id){
+  async function handleDelete(id) {
+    if (!window.confirm("Remove this staff member?")) return
     try {
-      const response= await axios.delete(`http://localhost:4000/api/user/delete/${id}`)
-      alert("Your Data has been Deleted : ", response)
-      console.log(response)
-    // fetchRegisteredUser()
-
-
-
+      await api.delete(`/user/delete/${id}`)
+      fetchRegisteredUser()
     } catch (error) {
       console.log(error.message)
     }
   }
 
-  function handleEdit(user){
+  function handleEdit(user) {
     setSelectedUser(user)
     setShowModal(true)
   }
-  
-  function handleClose(){
-     setShowModal(false)
+
+  function handleClose() {
+    setShowModal(false)
+    fetchRegisteredUser()
   }
 
-  
-    useEffect(()=>{
+  useEffect(() => {
     fetchRegisteredUser()
-  },[])
+  }, [])
+
   return (
-    <>
-    <Register />  
-    <br /> 
-    <hr />   
-    <br />
-
-    <div className={styles.cardContainer}>
-      {userData.map((user)=>(
-           <div key={user._id} >
-          <UserRegisterdCard id={user._id} OnDelete={handleDelete}name={user.name} email={user.email} onEdit={()=>handleEdit(user)} />
-        </div>
-      ))}
-    </div>
-        <div>
-
-          {showModal &&(
-            
-            <UpdateRegisterCard user={selectedUser} onClose={handleClose} id={selectedUser} />
-          )
-          }
-
+    <Layout>
+      <div className={pageStyles.page}>
+        <div className={pageStyles.pageHeader}>
+          <div>
+            <h1 className={pageStyles.pageTitle}>Manage Staff</h1>
+            <p className={pageStyles.pageSubtitle}>Everyone with access to Stockroom</p>
+          </div>
         </div>
 
+        {loading && <p className={pageStyles.emptyState}>Loading staff...</p>}
 
-    </>
+        {!loading && userData.length === 0 && (
+          <p className={pageStyles.emptyState}>No staff accounts registered yet.</p>
+        )}
+
+        <div className={styles.cardContainer}>
+          {userData.map((user) => (
+            <div key={user._id}>
+              <UserRegisterdCard id={user._id} OnDelete={handleDelete} name={user.name} email={user.email} role={user.role} onEdit={() => handleEdit(user)} />
+            </div>
+          ))}
+        </div>
+
+        {showModal && (
+          <UpdateRegisterCard user={selectedUser} onClose={handleClose} id={selectedUser} />
+        )}
+      </div>
+    </Layout>
   )
 }
 
 export default RegistrationPage
- 
