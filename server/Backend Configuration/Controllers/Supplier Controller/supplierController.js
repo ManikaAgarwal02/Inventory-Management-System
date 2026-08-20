@@ -1,66 +1,49 @@
-const Supplier = require('../models/Supplier');
-const ApiError = require('../utils/ApiError');
-const catchAsync = require('../utils/catchAsync');
-const { logActivity } = require('../services/activityLog.service');
+const Supplier = require("../../Models/SupplierSchema/supplier")
 
-const getSuppliers = catchAsync(async (_req, res) => {
-  const suppliers = await Supplier.find().populate('productsSupplied', 'name sku').sort({ name: 1 });
-  res.status(200).json({ success: true, data: { suppliers } });
-});
+const createSupplier = async (req, res) => {
+    try {
+        const { name, email, phone, address } = req.body
+        const supplier = await Supplier.create({ name, email, phone, address })
+        res.status(201).json({ message: "Supplier Added Successfully", data: supplier })
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ message: error.message })
+    }
+}
 
-const getSupplier = catchAsync(async (req, res) => {
-  const supplier = await Supplier.findById(req.params.id).populate('productsSupplied', 'name sku');
-  if (!supplier) throw new ApiError(404, 'Supplier not found');
-  res.status(200).json({ success: true, data: { supplier } });
-});
+const getSuppliers = async (req, res) => {
+    try {
+        const suppliers = await Supplier.find().sort({ createdAt: -1 })
+        res.json({ message: "Suppliers Fetched Successfully", data: suppliers })
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ message: error.message })
+    }
+}
 
-const createSupplier = catchAsync(async (req, res) => {
-  const supplier = await Supplier.create(req.body);
-  await logActivity({
-    user: req.user._id,
-    action: 'create',
-    entity: 'Supplier',
-    entityId: supplier._id,
-    newValue: supplier.toJSON(),
-  });
-  res.status(201).json({ success: true, data: { supplier } });
-});
+const updateSupplier = async (req, res) => {
+    try {
+        const { name, email, phone, address } = req.body
+        const supplier = await Supplier.findByIdAndUpdate(
+            req.params.id,
+            { name, email, phone, address },
+            { new: true }
+        )
+        res.json({ message: "Supplier Updated Successfully", data: supplier })
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ message: error.message })
+    }
+}
 
-const updateSupplier = catchAsync(async (req, res) => {
-  const supplier = await Supplier.findById(req.params.id);
-  if (!supplier) throw new ApiError(404, 'Supplier not found');
+const deleteSupplier = async (req, res) => {
+    try {
+        await Supplier.findByIdAndDelete(req.params.id)
+        res.json({ success: true, message: "Supplier Has Been Deleted" })
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ success: false, message: error.message })
+    }
+}
 
-  const previousValue = supplier.toJSON();
-  Object.assign(supplier, req.body);
-  await supplier.save();
-
-  await logActivity({
-    user: req.user._id,
-    action: 'update',
-    entity: 'Supplier',
-    entityId: supplier._id,
-    previousValue,
-    newValue: supplier.toJSON(),
-  });
-
-  res.status(200).json({ success: true, data: { supplier } });
-});
-
-const deleteSupplier = catchAsync(async (req, res) => {
-  const supplier = await Supplier.findById(req.params.id);
-  if (!supplier) throw new ApiError(404, 'Supplier not found');
-
-  await supplier.deleteOne();
-
-  await logActivity({
-    user: req.user._id,
-    action: 'delete',
-    entity: 'Supplier',
-    entityId: supplier._id,
-    previousValue: supplier.toJSON(),
-  });
-
-  res.status(200).json({ success: true, message: 'Supplier deleted' });
-});
-
-module.exports = { getSuppliers, getSupplier, createSupplier, updateSupplier, deleteSupplier };
+module.exports = { createSupplier, getSuppliers, updateSupplier, deleteSupplier }

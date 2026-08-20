@@ -1,60 +1,38 @@
-const Category = require('../models/Category');
-const ApiError = require('../utils/ApiError');
-const catchAsync = require('../utils/catchAsync');
-const { logActivity } = require('../services/activityLog.service');
+const Category = require("../../Models/CategorySchema/category")
 
-const getCategories = catchAsync(async (_req, res) => {
-  const categories = await Category.find().sort({ name: 1 });
-  res.status(200).json({ success: true, data: { categories } });
-});
+const createCategory = async (req, res) => {
+    try {
+        const { name, description } = req.body
+        const existing = await Category.findOne({ name })
+        if (existing) {
+            return res.status(400).json({ message: "Category Already Exists" })
+        }
+        const category = await Category.create({ name, description })
+        res.status(201).json({ message: "Category Created Successfully", data: category })
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ message: error.message })
+    }
+}
 
-const createCategory = catchAsync(async (req, res) => {
-  const category = await Category.create(req.body);
-  await logActivity({
-    user: req.user._id,
-    action: 'create',
-    entity: 'Category',
-    entityId: category._id,
-    newValue: category.toJSON(),
-  });
-  res.status(201).json({ success: true, data: { category } });
-});
+const getCategories = async (req, res) => {
+    try {
+        const categories = await Category.find().sort({ name: 1 })
+        res.json({ message: "Categories Fetched Successfully", data: categories })
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ message: error.message })
+    }
+}
 
-const updateCategory = catchAsync(async (req, res) => {
-  const category = await Category.findById(req.params.id);
-  if (!category) throw new ApiError(404, 'Category not found');
+const deleteCategory = async (req, res) => {
+    try {
+        await Category.findByIdAndDelete(req.params.id)
+        res.json({ success: true, message: "Category Has Been Deleted" })
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ success: false, message: error.message })
+    }
+}
 
-  const previousValue = category.toJSON();
-  Object.assign(category, req.body);
-  await category.save();
-
-  await logActivity({
-    user: req.user._id,
-    action: 'update',
-    entity: 'Category',
-    entityId: category._id,
-    previousValue,
-    newValue: category.toJSON(),
-  });
-
-  res.status(200).json({ success: true, data: { category } });
-});
-
-const deleteCategory = catchAsync(async (req, res) => {
-  const category = await Category.findById(req.params.id);
-  if (!category) throw new ApiError(404, 'Category not found');
-
-  await category.deleteOne();
-
-  await logActivity({
-    user: req.user._id,
-    action: 'delete',
-    entity: 'Category',
-    entityId: category._id,
-    previousValue: category.toJSON(),
-  });
-
-  res.status(200).json({ success: true, message: 'Category deleted' });
-});
-
-module.exports = { getCategories, createCategory, updateCategory, deleteCategory };
+module.exports = { createCategory, getCategories, deleteCategory }

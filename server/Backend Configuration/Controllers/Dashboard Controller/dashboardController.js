@@ -1,38 +1,43 @@
-const Product = require('../models/Product');
-const Supplier = require('../models/Supplier');
-const PurchaseOrder = require('../models/PurchaseOrder');
-const StockTransaction = require('../models/StockTransaction');
-const catchAsync = require('../utils/catchAsync');
+const Product = require("../../Models/ProductSchema/product")
+const Supplier = require("../../Models/SupplierSchema/supplier")
+const Category = require("../../Models/CategorySchema/category")
+const StockTransaction = require("../../Models/StockTransactionSchema/stockTransaction")
 
-const getStats = catchAsync(async (_req, res) => {
-  const products = await Product.find({ isActive: true });
+const getStats = async (req, res) => {
+    try {
+        const totalProducts = await Product.countDocuments()
+        const totalSuppliers = await Supplier.countDocuments()
+        const totalCategories = await Category.countDocuments()
 
-  const totalProducts = products.length;
-  const totalStockUnits = products.reduce((sum, p) => sum + p.currentStock, 0);
-  const stockValue = products.reduce((sum, p) => sum + p.currentStock * p.purchasePrice, 0);
-  const lowStockCount = products.filter((p) => p.currentStock <= p.reorderLevel && p.currentStock > 0).length;
-  const outOfStockCount = products.filter((p) => p.currentStock === 0).length;
+        const products = await Product.find()
+        const totalStockValue = products.reduce((sum, p) => sum + (p.price * p.quantity), 0)
+        const totalStockUnits = products.reduce((sum, p) => sum + p.quantity, 0)
 
-  const totalSuppliers = await Supplier.countDocuments({ isActive: true });
-  const pendingOrders = await PurchaseOrder.countDocuments({ status: 'pending' });
+        const lowStockProducts = await Product.find({
+            $expr: { $lte: ["$quantity", "$reorderLevel"] }
+        }).countDocuments()
 
-  const startOfToday = new Date();
-  startOfToday.setHours(0, 0, 0, 0);
-  const todaysTransactions = await StockTransaction.countDocuments({ createdAt: { $gte: startOfToday } });
+        const recentTransactions = await StockTransaction.find()
+            .populate("product", "name sku")
+            .sort({ createdAt: -1 })
+            .limit(5)
 
-  res.status(200).json({
-    success: true,
-    data: {
-      totalProducts,
-      totalStockUnits,
-      stockValue,
-      lowStockCount,
-      outOfStockCount,
-      totalSuppliers,
-      pendingOrders,
-      todaysTransactions,
-    },
-  });
-});
+        res.json({
+            message: "Dashboard Stats Fetched Successfully",
+            data: {
+                totalProducts,
+                totalSuppliers,
+                totalCategories,
+                totalStockValue,
+                totalStockUnits,
+                lowStockProducts,
+                recentTransactions
+            }
+        })
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ message: error.message })
+    }
+}
 
-module.exports = { getStats };
+module.exports = { getStats }

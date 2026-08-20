@@ -1,153 +1,76 @@
-const mongoose = require('mongoose');
-const Product = require('../models/Product');
-const StockTransaction = require('../models/StockTransaction');
-const ApiError = require('../utils/ApiError');
-const catchAsync = require('../utils/catchAsync');
-const { logActivity } = require('../services/activityLog.service');
+const Product = require("../../Models/ProductSchema/product")
+const StockTransaction = require("../../Models/StockTransactionSchema/stockTransaction")
 
-async function applyStockMovement({ productId, type, quantity, reason, userId }) {
-  const session = await mongoose.startSession();
-  try {
-    let result;
-    await session.withTransaction(async () => {
-      const product = await Product.findById(productId).session(session);
-      if (!product) throw new ApiError(404, 'Product not found');
+const stockIn = async (req, res) => {
+    try {
+        const { productId, quantity, note } = req.body
 
-      if (type === 'in') {
-        product.currentStock += quantity;
-      } else if (type === 'out') {
-        if (product.currentStock < quantity) {
-          throw new ApiError(400, `Insufficient stock: only ${product.currentStock} available`);
+        const product = await Product.findById(productId)
+        if (!product) {
+            return res.status(404).json({ message: "Product Not Found" })
         }
-        product.currentStock -= quantity;
-      } else if (type === 'adjustment') {
-  
-        if (quantity < 0) throw new ApiError(400, 'Stock cannot be adjusted below zero');
-        product.currentStock = quantity;
-      }
 
-      await product.save({ session });
+        product.quantity = product.quantity + Number(quantity)
+        await product.save()
 
-      const [transaction] = await StockTransaction.create(
-        [
-          {
-            product: product._id,
-            type,
+        const transaction = await StockTransaction.create({
+            product: productId,
+            type: "IN",
             quantity,
-            reason,
-            balanceAfter: product.currentStock,
-            performedBy: userId,
-          },
-        ],
-        { session }
-      );
+            note,
+            performedBy: req.user ? req.user.id : undefined
+        })
 
-      result = { product, transaction };
-    });
-    return result;
-  } finally {
-    session.endSession();
-  }
+        res.status(201).json({ message: "Stock In Recorded Successfully", data: transaction })
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ message: error.message })
+    }
 }
 
-const stockIn = catchAsync(async (req, res) => {
-  const { productId, quantity, reason } = req.body;
-  if (!quantity || quantity <= 0) throw new ApiError(400, 'Quantity must be greater than 0');
+const stockOut = async (req, res) => {
+    try {
+        const { productId, quantity, note } = req.body
 
-  const { product, transaction } = await applyStockMovement({
-    productId,
-    type: 'in',
-    quantity,
-    reason,
-    userId: req.user._id,
-  });
+        const product = await Product.findById(productId)
+        if (!product) {
+            return res.status(404).json({ message: "Product Not Found" })
+        }
 
-  await logActivity({
-    user: req.user._id,
-    action: 'stock_in',
-    entity: 'Product',
-    entityId: product._id,
-    newValue: { quantity, balanceAfter: product.currentStock },
-  });
+        if (product.quantity < Number(quantity)) {
+            return res.status(400).json({ message: "Insufficient Stock Available" })
+        }
 
-  res.status(201).json({ success: true, data: { product, transaction } });
-});
+        product.quantity = product.quantity - Number(quantity)
+        await product.save()
 
-const stockOut = catchAsync(async (req, res) => {
-  const { productId, quantity, reason } = req.body;
-  if (!quantity || quantity <= 0) throw new ApiError(400, 'Quantity must be greater than 0');
+        const transaction = await StockTransaction.create({
+            product: productId,
+            type: "OUT",
+            quantity,
+            note,
+            performedBy: req.user ? req.user.id : undefined
+        })
 
-  const { product, transaction } = await applyStockMovement({
-    productId,
-    type: 'out',
-    quantity,
-    reason,
-    userId: req.user._id,
-  });
+        res.status(201).json({ message: "Stock Out Recorded Successfully", data: transaction })
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ message: error.message })
+    }
+}
 
-  await logActivity({
-    user: req.user._id,
-    action: 'stock_out',
-    entity: 'Product',
-    entityId: product._id,
-    newValue: { quantity, balanceAfter: product.currentStock },
-  });
+const getTransactions = async (req, res) => {
+    try {
+        const transactions = await StockTransaction.find()
+            .populate("product", "name sku")
+            .populate("performedBy", "name email")
+            .sort({ createdAt: -1 })
 
-  res.status(201).json({ success: true, data: { product, transaction } });
-});
+        res.json({ message: "Stock Transactions Fetched Successfully", data: transactions })
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ message: error.message })
+    }
+}
 
-
-const stockAdjust = catchAsync(async (req, res) => {
-  const { productId, newQuantity, reason } = req.body;
-  if (newQuantity === undefined) throw new ApiError(400, 'newQuantity is required');
-  if (!reason) throw new ApiError(400, 'A reason is required for stock adjustments');
-
-  const { product, transaction } = await applyStockMovement({
-    productId,
-    type: 'adjustment',
-    quantity: newQuantity,
-    reason,
-    userId: req.user._id,
-  });
-
-  await logActivity({
-    user: req.user._id,
-    action: 'stock_adjust',
-    entity: 'Product',
-    entityId: product._id,
-    newValue: { newQuantity, reason },
-  });
-
-  res.status(201).json({ success: true, data: { product, transaction } });
-});
-
-
-const getTransactions = catchAsync(async (req, res) => {
-  const { product, type, from, to } = req.query;
-  const filter = {};
-  if (product) filter.product = product;
-  if (type) filter.type = type;
-  if (from || to) {
-    filter.createdAt = {};
-    if (from) filter.createdAt.$gte = new Date(from);
-    if (to) filter.createdAt.$lte = new Date(to);
-  }
-
-  const transactions = await StockTransaction.find(filter)
-    .populate('product', 'name sku')
-    .populate('performedBy', 'name')
-    .sort({ createdAt: -1 })
-    .limit(500);
-
-  res.status(200).json({ success: true, results: transactions.length, data: { transactions } });
-});
-
-
-const getLowStockAlerts = catchAsync(async (_req, res) => {
-  const products = await Product.find({ isActive: true }).populate('category', 'name');
-  const lowStock = products.filter((p) => p.currentStock <= p.reorderLevel);
-
-  res.status(200).json({ success: true, results: lowStock.length, data: { products: lowStock } });
-});
-
-module.exports = { stockIn, stockOut, stockAdjust, getTransactions, getLowStockAlerts };
+module.exports = { stockIn, stockOut, getTransactions }
