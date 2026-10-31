@@ -6,7 +6,8 @@ const {
     getProduct,
     updateProduct,
     deleteProduct,
-    getLowStockProducts
+    getLowStockProducts,
+    quickStockUpdate
 } = require("../../Controllers/Product Controller/productController")
 const verifyToken = require("../../Configuration Folders/Middleware Configuration/authMiddleware")
 
@@ -15,6 +16,8 @@ router.get("/products", verifyToken, getProducts)
 router.get("/products/low-stock", verifyToken, getLowStockProducts)
 router.get("/products/:id", verifyToken, getProduct)
 router.put("/products/:id", verifyToken, updateProduct)
+router.patch("/products/:id/quick-stock", verifyToken, quickStockUpdate)
 router.delete("/products/:id", verifyToken, deleteProduct)
 
 module.exports = router
+

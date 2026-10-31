@@ -3,11 +3,19 @@ const Supplier = require("../../Models/SupplierSchema/supplier")
 const createSupplier = async (req, res) => {
     try {
         const { name, email, phone, address } = req.body
-        const supplier = await Supplier.create({ name, email, phone, address })
+        if (!name || !name.trim()) {
+            return res.status(400).json({ message: "Supplier name is required" })
+        }
+        const supplier = await Supplier.create({
+            name: name.trim(),
+            email: email?.trim(),
+            phone: phone?.trim(),
+            address: address?.trim()
+        })
         res.status(201).json({ message: "Supplier Added Successfully", data: supplier })
     } catch (error) {
-        console.log(error)
-        res.status(500).json({ message: error.message })
+        console.log("createSupplier error:", error)
+        res.status(500).json({ message: error.message || "Failed to add supplier" })
     }
 }
 
