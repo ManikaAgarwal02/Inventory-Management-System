@@ -10,7 +10,6 @@ const verifyToken=(req,res,next)=>{
  }
  
 
-//  Berer token
 const token= authHeader.split(" ")[1];
 
 

@@ -6,7 +6,6 @@ const authorize=require("../../Configuration Folders/Middleware Configuration/ro
 
 
 router.get("/getData",verifyToken, getUser)
-// router.get("/getData",verifyToken,authorize("admin"), getUser)
 router.get("/getData/admin/api",verifyToken,authorize("admin"), (req,res)=>{
     res.json({
         message:"welcome Admin"

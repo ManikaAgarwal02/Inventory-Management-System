@@ -1,94 +1,207 @@
-# Student GLA – Project Setup
+# Inventory Management System (IMS)
 
-## Overview
+A full-stack Inventory Management System built with **React, Node.js, Express, and MongoDB**.
 
-This repository contains the initial setup for the **Student GLA** project. It provides a clean project structure, version control configuration, and documentation to help developers start building the application efficiently.
+## Features
 
-## Objectives
+- JWT authentication with Admin and Staff roles
+- Product, category, and supplier management
+- Stock In / Stock Out
+- Warehouse and warehouse-to-warehouse transfers
+- Purchase orders and stock receiving
+- Staff stock requests
+- CSV product import
+- Dashboard, reports, alerts, and activity logs
+- User and profile management
+- Password reset
+- Role-based access control
+- Inventory validation and concurrency protection
 
-- Establish a standardized project structure.
-- Configure Git version control.
-- Provide project documentation.
-- Enable easy collaboration among team members.
-- Prepare the foundation for future development.
+## Tech Stack
+
+**Frontend**
+- React 19
+- Vite
+- React Router
+- Axios
+
+**Backend**
+- Node.js
+- Express 5
+- MongoDB
+- Mongoose
+- JWT
+- bcrypt
 
 ## Project Structure
 
+```text
+IMS/
+├── client/          # React frontend
+│   └── src/
+│       ├── Components/
+│       ├── Pages/
+│       ├── Styles/
+│       └── utils/
+│
+├── server/          # Express backend
+│   ├── Backend Configuration/
+│   │   ├── Controllers/
+│   │   ├── Models/
+│   │   └── Routes/
+│   ├── tests/
+│   └── server.js
+│
+└── README.md
 ```
-student-gla-project-setup/
-├── src/          # Source code
-├── docs/         # Project documentation
-├── tests/        # Test cases
-├── .gitignore    # Git ignore rules
-└── README.md     # Project documentation
+
+## Setup
+
+### 1. Backend
+
+```bash
+cd server
+npm install
 ```
 
-## Prerequisites
+Create `server/.env`:
 
-Before getting started, ensure you have:
+```env
+MONGO_URI=mongodb://localhost:27017/InventoryManagementDB
+JWT_SECRET=your-secret-key
+PORT=4000
+CLIENT_ORIGIN=http://localhost:5173
+```
 
-- Git
-- A code editor (e.g., VS Code)
-- Required runtime/framework (to be added based on the project)
+Start the backend:
 
-## Getting Started
+```bash
+npm start
+```
 
-1. Clone the repository:
+Development mode:
 
-   ```bash
-   git clone <repository-url>
-   ```
+```bash
+npm run dev
+```
 
-2. Navigate to the project directory:
+### 2. Frontend
 
-   ```bash
-   cd student-gla-project-setup
-   ```
+```bash
+cd client
+npm install
+npm run dev
+```
 
-3. Create a new feature branch:
+Frontend normally runs on:
 
-   ```bash
-   git checkout -b feature/your-feature-name
-   ```
+```text
+http://localhost:5173
+```
 
-4. Start development.
+Backend API:
 
-## Git Workflow
+```text
+http://localhost:4000/api
+```
 
-- `main` – Production-ready code
-- `develop` – Integration branch
-- `feature/*` – New features
-- `bugfix/*` – Bug fixes
-- `hotfix/*` – Critical production fixes
+## Main API Routes
 
-## Best Practices
+```text
+POST   /api/loginRoute/api
+POST   /api/registration/api
 
-- Write clean and maintainable code.
-- Follow project coding standards.
-- Commit changes with meaningful messages.
-- Update documentation when adding features.
-- Write tests for new functionality.
+GET    /api/products
+POST   /api/products
+PUT    /api/products/:id
+DELETE /api/products/:id
 
-## Future Enhancements
+POST   /api/stock/in
+POST   /api/stock/out
+GET    /api/stock/transactions
 
-- Project-specific configuration
-- CI/CD pipeline
-- Automated testing
-- Code quality checks
-- Deployment setup
+GET    /api/suppliers
+POST   /api/suppliers
 
-## Contributing
+GET    /api/warehouses
+POST   /api/warehouses
+POST   /api/transfers
 
-1. Fork the repository.
-2. Create a feature branch.
-3. Commit your changes.
-4. Push the branch.
-5. Open a Pull Request.
+GET    /api/purchase-orders
+POST   /api/purchase-orders
+POST   /api/purchase-orders/:id/receive
+
+POST   /api/stock-requests
+GET    /api/stock-requests
+
+GET    /api/dashboard/stats
+GET    /api/reports/summary
+GET    /api/activity-logs
+```
+
+## Database
+
+Main MongoDB models:
+
+- User
+- Product
+- Category
+- Supplier
+- Warehouse
+- WarehouseStock
+- StockTransaction
+- StockTransfer
+- PurchaseOrder
+- StockRequest
+- PasswordReset
+- ActivityLog
+
+## Roles
+
+### Admin
+
+Full access to inventory, warehouses, purchase orders, reports, users, activity logs, and administrative operations.
+
+### Staff
+
+Access to permitted inventory operations, products, profile management, and stock requests.
+
+## Testing
+
+Backend tests:
+
+```bash
+cd server
+npm test
+npm run test:e2e
+```
+
+Frontend lint:
+
+```bash
+cd client
+npm run lint
+```
+
+## Production Build
+
+```bash
+cd client
+npm run build
+```
+
+Set production environment variables before deploying.
+
+## Important Rule
+
+The system maintains the inventory relationship:
+
+```text
+Product.quantity = Sum of WarehouseStock quantities
+```
+
+Stock operations and warehouse transfers are validated to prevent negative or inconsistent inventory.
 
 ## License
 
-This project is intended for educational purposes. Add an appropriate license if the project will be distributed publicly.
-
-## Author
-
-Student GLA Project Team
+This project is for educational/development use unless a separate license is provided.
