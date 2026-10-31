@@ -1,0 +1,618 @@
+.staffContainer {
+    min-height: 100vh;
+    background: #f5f6f8;
+    color: #24292f;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ---------------- Top Navbar ---------------- */
+.navbar {
+    background: #161b22;
+    border-bottom: 1px solid #262d38;
+    padding: 0 32px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+}
+
+.brandGroup {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.brandTitle {
+    font-family: "Georgia", serif;
+    font-size: 19px;
+    letter-spacing: 0.02em;
+    color: #f2c14e;
+    margin: 0;
+    text-decoration: none;
+}
+
+.staffBadge {
+    background: rgba(242, 193, 78, 0.15);
+    color: #f2c14e;
+    border: 1px solid rgba(242, 193, 78, 0.3);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 3px 8px;
+    border-radius: 4px;
+}
+
+.navTabs {
+    display: flex;
+    gap: 6px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.navTabBtn {
+    background: transparent;
+    border: none;
+    color: #8b949e;
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.navTabBtn:hover {
+    color: #f0f3f6;
+    background: #1c232d;
+}
+
+.navTabActive {
+    color: #f2c14e;
+    background: #1c232d;
+    font-weight: 600;
+}
+
+.userControls {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.userGreeting {
+    display: flex;
+    flex-direction: column;
+    text-align: right;
+}
+
+.userName {
+    color: #f0f3f6;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.userRole {
+    color: #8b949e;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.logoutBtn {
+    background: transparent;
+    border: 1px solid #30363d;
+    color: #c9d1d9;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.logoutBtn:hover {
+    border-color: #f2c14e;
+    color: #f2c14e;
+}
+
+.adminSwitchBtn {
+    background: #212833;
+    border: 1px solid #384252;
+    color: #f2c14e;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+/* ---------------- Main Content Layout ---------------- */
+.mainContent {
+    flex: 1;
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 32px 24px;
+    box-sizing: border-box;
+}
+
+.pageHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 14px;
+}
+
+.pageTitle {
+    font-family: "Georgia", serif;
+    font-size: 26px;
+    color: #161b22;
+    margin: 0;
+}
+
+.pageSubtitle {
+    font-size: 13px;
+    color: #6e7681;
+    margin-top: 4px;
+}
+
+.primaryActionBtn {
+    background: #161b22;
+    color: #f2c14e;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.15s ease;
+}
+
+.primaryActionBtn:hover {
+    background: #262d38;
+}
+
+/* ---------------- Stat Cards ---------------- */
+.statGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 28px;
+}
+
+.statCard {
+    background: #ffffff;
+    border: 1px solid #e5e8ec;
+    border-radius: 10px;
+    padding: 18px 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.statLabel {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #6e7681;
+    margin: 0 0 6px 0;
+}
+
+.statValue {
+    font-family: "Georgia", serif;
+    font-size: 28px;
+    color: #161b22;
+    margin: 0;
+}
+
+.statValuePending {
+    color: #b08800;
+}
+
+/* ---------------- Card and Table ---------------- */
+.card {
+    background: #ffffff;
+    border: 1px solid #e5e8ec;
+    border-radius: 10px;
+    padding: 24px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+    margin-bottom: 24px;
+}
+
+.cardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.cardTitle {
+    font-family: "Georgia", serif;
+    font-size: 18px;
+    color: #161b22;
+    margin: 0;
+}
+
+.tableWrap {
+    overflow-x: auto;
+    border-radius: 8px;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #ffffff;
+    border: 1px solid #e5e8ec;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.table th {
+    text-align: left;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #6e7681;
+    background: #f8fafc;
+    padding: 12px 16px;
+    border-bottom: 1px solid #e5e8ec;
+}
+
+.table td {
+    padding: 12px 16px;
+    font-size: 14px;
+    color: #24292f;
+    border-bottom: 1px solid #eef0f2;
+}
+
+.table tr:last-child td {
+    border-bottom: none;
+}
+
+.table tr:hover {
+    background: #fdfdfd;
+}
+
+.mono {
+    font-family: "Menlo", "Consolas", monospace;
+    font-size: 13px;
+}
+
+/* ---------------- Status Badges ---------------- */
+.badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+}
+
+.badgeIn {
+    background: #e5f6ea;
+    color: #1a7f37;
+}
+
+.badgeOut {
+    background: #fdecea;
+    color: #b3261e;
+}
+
+.badgePending {
+    background: #fff4d6;
+    color: #8a5a00;
+    border: 1px solid #fae19c;
+}
+
+.badgeApproved {
+    background: #e5f6ea;
+    color: #1a7f37;
+    border: 1px solid #b7e4c4;
+}
+
+.badgeRejected {
+    background: #fdecea;
+    color: #b3261e;
+    border: 1px solid #f5c2be;
+}
+
+.badgeOk {
+    background: #e5f6ea;
+    color: #1a7f37;
+}
+
+.badgeLow {
+    background: #fff4d6;
+    color: #8a5a00;
+}
+
+.badgeZero {
+    background: #fdecea;
+    color: #b3261e;
+}
+
+/* ---------------- Toolbar & Filters ---------------- */
+.toolbar {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+}
+
+.searchInput {
+    flex: 1;
+    min-width: 240px;
+    padding: 9px 12px;
+    border: 1px solid #d0d5db;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.searchInput:focus {
+    outline: none;
+    border-color: #f2c14e;
+    box-shadow: 0 0 0 2px rgba(242, 193, 78, 0.2);
+}
+
+.filterSelect {
+    padding: 9px 12px;
+    border: 1px solid #d0d5db;
+    border-radius: 6px;
+    font-size: 14px;
+    background: #ffffff;
+}
+
+.tableActionBtn {
+    background: #f8fafc;
+    border: 1px solid #d0d5db;
+    color: #161b22;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.tableActionBtn:hover {
+    background: #161b22;
+    color: #f2c14e;
+    border-color: #161b22;
+}
+
+/* ---------------- Empty & Loading States ---------------- */
+.emptyState {
+    text-align: center;
+    padding: 40px 20px;
+    color: #6e7681;
+    font-size: 14px;
+}
+
+.errorBox {
+    background: #fdecea;
+    color: #b3261e;
+    border: 1px solid #f5c2be;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 14px;
+    margin-bottom: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* ---------------- Modal ---------------- */
+.modalOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(22, 27, 34, 0.6);
+    backdrop-filter: blur(2px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+}
+
+.modalBox {
+    width: 480px;
+    max-width: 90vw;
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 28px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+.modalTitle {
+    font-family: "Georgia", serif;
+    font-size: 20px;
+    color: #161b22;
+    margin: 0 0 8px 0;
+}
+
+.modalSubtitle {
+    font-size: 13px;
+    color: #6e7681;
+    margin: 0 0 20px 0;
+}
+
+.formRow {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 16px;
+}
+
+.formRow label {
+    font-size: 12px;
+    color: #6e7681;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+}
+
+.formRow input,
+.formRow select,
+.formRow textarea {
+    padding: 10px 12px;
+    border: 1px solid #d0d5db;
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: inherit;
+}
+
+.formRow input:focus,
+.formRow select:focus,
+.formRow textarea:focus {
+    outline: none;
+    border-color: #f2c14e;
+    box-shadow: 0 0 0 2px rgba(242, 193, 78, 0.2);
+}
+
+.modalActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.cancelBtn {
+    background: transparent;
+    color: #475569;
+    border: 1px solid #cbd5e1;
+    padding: 9px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.cancelBtn:hover {
+    border-color: #94a3b8;
+}
+
+.submitBtn {
+    background: #161b22;
+    color: #f2c14e;
+    border: none;
+    padding: 9px 18px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.submitBtn:hover {
+    background: #262d38;
+}
+
+/* ---------------- Profile Section ---------------- */
+.profileCard {
+    max-width: 580px;
+    margin: 0 auto;
+    background: #ffffff;
+    border: 1px solid #e5e8ec;
+    border-radius: 12px;
+    padding: 32px;
+    text-align: center;
+}
+
+.avatar {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: #161b22;
+    color: #f2c14e;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Georgia", serif;
+    font-size: 30px;
+    margin: 0 auto 16px auto;
+}
+
+.profileName {
+    font-family: "Georgia", serif;
+    font-size: 22px;
+    color: #161b22;
+    margin: 0 0 4px 0;
+}
+
+.profileEmail {
+    font-size: 14px;
+    color: #6e7681;
+    margin: 0 0 16px 0;
+}
+
+.profileDetails {
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 16px;
+    text-align: left;
+    margin-bottom: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 14px;
+}
+
+.detailRow {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #eef0f2;
+    padding-bottom: 8px;
+}
+
+.detailRow:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.detailLabel {
+    color: #6e7681;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.detailVal {
+    font-weight: 500;
+}
+
+/* ---------------- Responsive ---------------- */
+@media (max-width: 768px) {
+    .navbar {
+        padding: 0 16px;
+        height: auto;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+        padding-top: 12px;
+        padding-bottom: 12px;
+    }
+
+    .navTabs {
+        overflow-x: auto;
+    }
+
+    .mainContent {
+        padding: 20px 16px;
+    }
+
+    .userGreeting {
+        display: none;
+    }
+}
