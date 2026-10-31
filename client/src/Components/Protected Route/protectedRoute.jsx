@@ -7,7 +7,7 @@ function ProtectedRoute({ children, adminOnly = false }) {
     }
 
     if (adminOnly && !isAdmin()) {
-        return <Navigate to="/dashboard" replace />
+        return <Navigate to="/staff" replace />
     }
 
     return children

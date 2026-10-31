@@ -8,12 +8,24 @@ import ProductsPage from './Pages/Products Page/productsPage'
 import SuppliersPage from './Pages/Suppliers Page/suppliersPage'
 import StockPage from './Pages/Stock Page/stockPage'
 import AlertsPage from './Pages/Alerts Page/alertsPage'
+import ActivityPage from './Pages/Activity Page/activityPage'
+import PurchaseOrdersPage from './Pages/Purchase Orders Page/purchaseOrdersPage'
+import WarehousesPage from './Pages/Warehouses Page/warehousesPage'
+import TransfersPage from './Pages/Transfers Page/transfersPage'
+import ReportsPage from './Pages/Reports Page/reportsPage'
+import ImportPage from './Pages/Import Page/importPage'
+import ProfilePage from './Pages/Profile Page/profilePage'
+import ForgotPasswordPage from './Pages/Password Reset Page/forgotPasswordPage'
+import ResetPasswordPage from './Pages/Password Reset Page/resetPasswordPage'
+import HomePage from './Pages/Home Page/homePage'
+import StaffDashboard from './Pages/Staff Page/staffDashboard'
+import AdminStockRequestsPage from './Pages/Admin Stock Requests Page/adminStockRequestsPage'
 import ProtectedRoute from './Components/Protected Route/protectedRoute'
-import { isLoggedIn } from './utils/auth'
+import { isLoggedIn, isAdmin } from './utils/auth'
 
 function PublicRoute({ children }) {
   if (isLoggedIn()) {
-    return <Navigate to="/dashboard" replace />
+    return <Navigate to={isAdmin() ? "/dashboard" : "/staff"} replace />
   }
   return children
 }
@@ -22,8 +34,10 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        {/* Landing Page */}
+        <Route path="/" element={<HomePage />} />
 
+        {/* Public Auth Routes */}
         <Route path="/login" element={
           <PublicRoute><LoginPage /></PublicRoute>
         } />
@@ -32,24 +46,62 @@ function App() {
           <PublicRoute><SignupPage /></PublicRoute>
         } />
 
+        <Route path="/forgot-password" element={<PublicRoute><ForgotPasswordPage /></PublicRoute>} />
+        <Route path="/reset-password/:token" element={<PublicRoute><ResetPasswordPage /></PublicRoute>} />
+
+        {/* Staff / Employee Panel */}
+        <Route path="/staff" element={
+          <ProtectedRoute><StaffDashboard /></ProtectedRoute>
+        } />
+
+        {/* Admin Dashboard & Management Routes */}
         <Route path="/dashboard" element={
-          <ProtectedRoute><Dashboard /></ProtectedRoute>
+          <ProtectedRoute adminOnly><Dashboard /></ProtectedRoute>
         } />
 
         <Route path="/products" element={
-          <ProtectedRoute><ProductsPage /></ProtectedRoute>
+          <ProtectedRoute adminOnly><ProductsPage /></ProtectedRoute>
+        } />
+
+        <Route path="/products/import" element={
+          <ProtectedRoute adminOnly><ImportPage /></ProtectedRoute>
+        } />
+
+        <Route path="/purchase-orders" element={
+          <ProtectedRoute adminOnly><PurchaseOrdersPage /></ProtectedRoute>
+        } />
+
+        <Route path="/warehouses" element={
+          <ProtectedRoute adminOnly><WarehousesPage /></ProtectedRoute>
+        } />
+
+        <Route path="/transfers" element={
+          <ProtectedRoute adminOnly><TransfersPage /></ProtectedRoute>
+        } />
+
+        <Route path="/reports" element={
+          <ProtectedRoute adminOnly><ReportsPage /></ProtectedRoute>
+        } />
+
+        <Route path="/profile" element={
+          <ProtectedRoute><ProfilePage /></ProtectedRoute>
         } />
 
         <Route path="/suppliers" element={
-          <ProtectedRoute><SuppliersPage /></ProtectedRoute>
+          <ProtectedRoute adminOnly><SuppliersPage /></ProtectedRoute>
         } />
 
         <Route path="/stock" element={
-          <ProtectedRoute><StockPage /></ProtectedRoute>
+          <ProtectedRoute adminOnly><StockPage /></ProtectedRoute>
         } />
 
         <Route path="/alerts" element={
-          <ProtectedRoute><AlertsPage /></ProtectedRoute>
+          <ProtectedRoute adminOnly><AlertsPage /></ProtectedRoute>
+        } />
+
+        {/* Admin Staff Stock Requests */}
+        <Route path="/admin/requests" element={
+          <ProtectedRoute adminOnly><AdminStockRequestsPage /></ProtectedRoute>
         } />
 
         {/* Admin-only staff management: registration list with edit/delete */}
@@ -57,7 +109,11 @@ function App() {
           <ProtectedRoute adminOnly><RegistrationPage /></ProtectedRoute>
         } />
 
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        <Route path="/activity" element={
+          <ProtectedRoute adminOnly><ActivityPage /></ProtectedRoute>
+        } />
+
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   )

@@ -4,8 +4,12 @@ export function saveSession(token, user) {
 }
 
 export function getUser() {
-    const raw = localStorage.getItem("User")
-    return raw ? JSON.parse(raw) : null
+    try {
+        const raw = localStorage.getItem("User")
+        return raw ? JSON.parse(raw) : null
+    } catch {
+        return null
+    }
 }
 
 export function getToken() {
@@ -18,7 +22,7 @@ export function isLoggedIn() {
 
 export function isAdmin() {
     const user = getUser()
-    return user && user.role === "admin"
+    return !!user && user.role === "admin"
 }
 
 export function logout() {

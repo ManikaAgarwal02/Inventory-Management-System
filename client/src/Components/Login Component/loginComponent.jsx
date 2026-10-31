@@ -25,7 +25,11 @@ function LoginComponent() {
         try {
             const response = await api.post("/loginRoute/api", user)
             saveSession(response.data.token, response.data.user)
-            navigate("/dashboard")
+            if (response.data.user?.role === "staff") {
+                navigate("/staff")
+            } else {
+                navigate("/dashboard")
+            }
         } catch (error) {
             setError(error.response?.data?.message || "Unable To Log In")
         } finally {
@@ -58,6 +62,10 @@ function LoginComponent() {
                         {loading ? "Signing In..." : "Sign In"}
                     </button>
                 </form>
+
+                <p className={styles.switchText}>
+                    <Link to="/forgot-password">Forgot your password?</Link>
+                </p>
 
                 <p className={styles.switchText}>
                     New staff member? <Link to="/register">Create an account</Link>

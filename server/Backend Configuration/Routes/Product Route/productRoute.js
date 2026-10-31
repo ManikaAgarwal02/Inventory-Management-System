@@ -1,5 +1,7 @@
 const express = require("express")
 const router = express.Router()
+const authorize = require("../../Configuration Folders/Middleware Configuration/roleSpecificMiddleware")
+router.param("id", require("../../Configuration Folders/Middleware Configuration/validateObjectId"))
 const {
     createProduct,
     getProducts,
@@ -15,6 +17,6 @@ router.get("/products", verifyToken, getProducts)
 router.get("/products/low-stock", verifyToken, getLowStockProducts)
 router.get("/products/:id", verifyToken, getProduct)
 router.put("/products/:id", verifyToken, updateProduct)
-router.delete("/products/:id", verifyToken, deleteProduct)
+router.delete("/products/:id", verifyToken, authorize("admin"), deleteProduct)
 
 module.exports = router

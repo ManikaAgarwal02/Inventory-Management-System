@@ -57,16 +57,12 @@ function Register() {
 
                     <div className={styles.formRow}>
                         <label>Password</label>
-                        <input onChange={handleChange} value={user.password} type="password" name="password" placeholder="Create a password" required />
+                        <input onChange={handleChange} value={user.password} type="password" name="password" placeholder="At least 6 characters" minLength={6} required />
                     </div>
 
-                    <div className={styles.formRow}>
-                        <label>Role</label>
-                        <select onChange={handleChange} value={user.role} name="role">
-                            <option value="staff">Staff</option>
-                            <option value="admin">Admin</option>
-                        </select>
-                    </div>
+                    <p className={styles.switchText} style={{ marginTop: 0 }}>
+                        New accounts are created as staff. An admin can change roles later.
+                    </p>
 
                     {error && <p className={styles.errorText}>{error}</p>}
 

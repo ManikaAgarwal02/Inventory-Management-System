@@ -1,34 +1,38 @@
-const jwt= require("jsonwebtoken")
+const jwt = require("jsonwebtoken")
+const getJwtSecret = require("../jwtSecret")
+const User = require("../../Models/UserSchema/user")
 
-const verifyToken=(req,res,next)=>{
- const authHeader=req.headers.authorization;
- console.log(authHeader)
- if(!authHeader){
-    return res.status(401).json({
-        message:"Token is Missing/Token is invalid"
-    })
- }
- 
+const verifyToken = async (req, res, next) => {
+    const authHeader = req.headers.authorization
 
 const token= authHeader.split(" ")[1];
 
+    const token = authHeader.split(" ")[1]
 
+    let payload
+    try {
+        payload = jwt.verify(token, getJwtSecret())
+    } catch (error) {
+        const message = error.name === "TokenExpiredError" ? "Session expired, please log in again" : "Token is invalid"
+        return res.status(401).json({ message })
+    }
 
-try {
-
-    const secretKey=process.env.JWT_SECRET || "Dikshant16121999Chakrayat@123"
-    const decode= jwt.verify(token,secretKey)
-    console.log(decode)
-
-    req.user= decode
-    next()
-    
-} catch (error) {
-    console.log(error.message)
-    console.log(error)
-    res.json(error)
+    try {
+        // A deleted user or a demoted admin must lose access immediately,
+        // not when the 8h token happens to expire.
+        const current = await User.findById(payload.id).select("name email role isActive")
+        if (!current) {
+            return res.status(401).json({ message: "Account no longer exists, please log in again" })
+        }
+        if (current.isActive === false) {
+            return res.status(403).json({ message: "Your account has been deactivated" })
+        }
+        req.user = { id: String(current._id), name: current.name, email: current.email, role: current.role }
+        next()
+    } catch (error) {
+        console.log(error.message)
+        res.status(500).json({ message: "Unable to verify session" })
+    }
 }
 
-
-}
-module.exports=verifyToken
+module.exports = verifyToken

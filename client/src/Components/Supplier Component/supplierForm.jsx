@@ -1,25 +1,18 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import styles from "../../Styles/page.module.css"
-import api from "../../utils/api"
+import api, { getErrorMessage } from "../../utils/api"
 
 const emptyForm = { name: "", email: "", phone: "", address: "" }
 
 function SupplierForm({ supplier, onClose, onSaved }) {
-    const [form, setForm] = useState(emptyForm)
+    const [form, setForm] = useState(() => supplier ? {
+        name: supplier.name || "",
+        email: supplier.email || "",
+        phone: supplier.phone || "",
+        address: supplier.address || ""
+    } : emptyForm)
     const [error, setError] = useState("")
-
-    useEffect(() => {
-        if (supplier) {
-            setForm({
-                name: supplier.name || "",
-                email: supplier.email || "",
-                phone: supplier.phone || "",
-                address: supplier.address || ""
-            })
-        } else {
-            setForm(emptyForm)
-        }
-    }, [supplier])
+    const [saving, setSaving] = useState(false)
 
     function handleChange(e) {
         setForm({ ...form, [e.target.name]: e.target.value })
@@ -28,6 +21,7 @@ function SupplierForm({ supplier, onClose, onSaved }) {
     async function handleSubmit(e) {
         e.preventDefault()
         setError("")
+        setSaving(true)
         try {
             if (supplier) {
                 await api.put(`/suppliers/${supplier._id}`, form)
@@ -36,7 +30,9 @@ function SupplierForm({ supplier, onClose, onSaved }) {
             }
             onSaved()
         } catch (err) {
-            setError(err.response?.data?.message || "Unable To Save Supplier")
+            setError(getErrorMessage(err, "Unable To Save Supplier"))
+        } finally {
+            setSaving(false)
         }
     }
 
@@ -63,11 +59,11 @@ function SupplierForm({ supplier, onClose, onSaved }) {
                         <textarea name="address" rows={3} value={form.address} onChange={handleChange} />
                     </div>
 
-                    {error && <p style={{ color: "#b3261e", fontSize: 13 }}>{error}</p>}
+                    {error && <p className={styles.errorText}>{error}</p>}
 
                     <div className={styles.modalActions}>
                         <button type="button" className={styles.secondaryBtn} onClick={onClose}>Cancel</button>
-                        <button type="submit" className={styles.primaryBtn}>{supplier ? "Save Changes" : "Add Supplier"}</button>
+                        <button type="submit" className={styles.primaryBtn} disabled={saving}>{saving ? "Saving..." : supplier ? "Save Changes" : "Add Supplier"}</button>
                     </div>
                 </form>
             </div>

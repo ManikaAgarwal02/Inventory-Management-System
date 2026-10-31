@@ -1,10 +1,24 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import styles from "../../Styles/page.module.css"
-import api from "../../utils/api"
+import api, { getErrorMessage } from "../../utils/api"
 
-function StockForm({ products, onClose, onSaved }) {
-    const [form, setForm] = useState({ productId: "", type: "IN", quantity: "", note: "" })
+function StockForm({ products, onClose, onSaved, defaultProductId = "", defaultType = "IN", defaultQuantity = "" }) {
+    const [form, setForm] = useState({
+        productId: defaultProductId,
+        type: defaultType,
+        quantity: defaultQuantity,
+        note: "",
+        warehouseId: ""
+    })
+    const [warehouses, setWarehouses] = useState([])
     const [error, setError] = useState("")
+    const [saving, setSaving] = useState(false)
+
+    useEffect(() => {
+        api.get("/warehouses").then((res) => setWarehouses((res.data.data || []).filter((w) => w.isActive))).catch(() => {})
+    }, [])
+
+    const selectedProduct = products.find((p) => p._id === form.productId)
 
     function handleChange(e) {
         setForm({ ...form, [e.target.name]: e.target.value })
@@ -13,16 +27,31 @@ function StockForm({ products, onClose, onSaved }) {
     async function handleSubmit(e) {
         e.preventDefault()
         setError("")
+
+        const quantity = Number(form.quantity)
+        if (!Number.isInteger(quantity) || quantity < 1) {
+            setError("Quantity must be a whole number of at least 1")
+            return
+        }
+        if (form.type === "OUT" && selectedProduct && quantity > selectedProduct.quantity) {
+            setError(`Only ${selectedProduct.quantity} ${selectedProduct.unit} in stock`)
+            return
+        }
+
+        setSaving(true)
         try {
             const endpoint = form.type === "IN" ? "/stock/in" : "/stock/out"
             await api.post(endpoint, {
                 productId: form.productId,
-                quantity: form.quantity,
-                note: form.note
+                quantity,
+                note: form.note,
+                warehouseId: form.warehouseId || undefined
             })
-            onSaved()
+            onSaved(form.type)
         } catch (err) {
-            setError(err.response?.data?.message || "Unable To Record Transaction")
+            setError(getErrorMessage(err, "Unable To Record Transaction"))
+        } finally {
+            setSaving(false)
         }
     }
 
@@ -50,9 +79,19 @@ function StockForm({ products, onClose, onSaved }) {
                         </select>
                     </div>
 
+                    {warehouses.length > 0 && (
+                        <div className={styles.formRow}>
+                            <label>Warehouse</label>
+                            <select name="warehouseId" value={form.warehouseId} onChange={handleChange}>
+                                <option value="">{form.type === "IN" ? "Default warehouse" : "Any warehouse (default first)"}</option>
+                                {warehouses.map((w) => <option key={w._id} value={w._id}>{w.name}</option>)}
+                            </select>
+                        </div>
+                    )}
+
                     <div className={styles.formRow}>
                         <label>Quantity</label>
-                        <input type="number" min="1" name="quantity" value={form.quantity} onChange={handleChange} required />
+                        <input type="number" min="1" step="1" name="quantity" value={form.quantity} onChange={handleChange} required />
                     </div>
 
                     <div className={styles.formRow}>
@@ -60,11 +99,11 @@ function StockForm({ products, onClose, onSaved }) {
                         <input name="note" value={form.note} onChange={handleChange} placeholder="e.g. Purchase order #204" />
                     </div>
 
-                    {error && <p style={{ color: "#b3261e", fontSize: 13 }}>{error}</p>}
+                    {error && <p className={styles.errorText}>{error}</p>}
 
                     <div className={styles.modalActions}>
                         <button type="button" className={styles.secondaryBtn} onClick={onClose}>Cancel</button>
-                        <button type="submit" className={styles.primaryBtn}>Record Movement</button>
+                        <button type="submit" className={styles.primaryBtn} disabled={saving}>{saving ? "Saving..." : "Record Movement"}</button>
                     </div>
                 </form>
             </div>

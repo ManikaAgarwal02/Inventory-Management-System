@@ -1,12 +1,10 @@
-const authorize=(...roles)=>{
-    return(req,res,next)=>{
-        console.log("Allowed Role: ", roles )
-        console.log("Logged in Role:", req.user.role)
-        if(!roles.includes(req.user.role)){
-            return res.json({message:"Access Denined"})
+const authorize = (...roles) => {
+    return (req, res, next) => {
+        if (!req.user || !roles.includes(req.user.role)) {
+            return res.status(403).json({ message: "Access denied" })
         }
         next()
     }
 }
 
-module.exports=authorize
+module.exports = authorize

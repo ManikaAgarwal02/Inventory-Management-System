@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import styles from "../../Styles/page.module.css"
-import api from "../../utils/api"
+import api, { getErrorMessage } from "../../utils/api"
 
 const emptyForm = {
     name: "",
@@ -14,25 +14,18 @@ const emptyForm = {
 }
 
 function ProductForm({ product, categories, suppliers, onClose, onSaved }) {
-    const [form, setForm] = useState(emptyForm)
+    const [form, setForm] = useState(() => product ? {
+        name: product.name || "",
+        sku: product.sku || "",
+        category: product.category?._id || "",
+        supplier: product.supplier?._id || "",
+        price: product.price ?? "",
+        quantity: product.quantity ?? "",
+        reorderLevel: product.reorderLevel ?? "",
+        unit: product.unit || "pcs"
+    } : emptyForm)
     const [error, setError] = useState("")
-
-    useEffect(() => {
-        if (product) {
-            setForm({
-                name: product.name || "",
-                sku: product.sku || "",
-                category: product.category?._id || "",
-                supplier: product.supplier?._id || "",
-                price: product.price ?? "",
-                quantity: product.quantity ?? "",
-                reorderLevel: product.reorderLevel ?? "",
-                unit: product.unit || "pcs"
-            })
-        } else {
-            setForm(emptyForm)
-        }
-    }, [product])
+    const [saving, setSaving] = useState(false)
 
     function handleChange(e) {
         setForm({ ...form, [e.target.name]: e.target.value })
@@ -41,15 +34,22 @@ function ProductForm({ product, categories, suppliers, onClose, onSaved }) {
     async function handleSubmit(e) {
         e.preventDefault()
         setError("")
+        setSaving(true)
         try {
             if (product) {
-                await api.put(`/products/${product._id}`, form)
+                // only send quantity if the user changed it, so a stale value in this form
+                // can never overwrite stock movements recorded since the form was opened
+                const payload = { ...form }
+                if (String(form.quantity) === String(product.quantity)) delete payload.quantity
+                await api.put(`/products/${product._id}`, payload)
             } else {
                 await api.post("/products", form)
             }
             onSaved()
         } catch (err) {
-            setError(err.response?.data?.message || "Unable To Save Product")
+            setError(getErrorMessage(err, "Unable To Save Product"))
+        } finally {
+            setSaving(false)
         }
     }
 
@@ -95,20 +95,20 @@ function ProductForm({ product, categories, suppliers, onClose, onSaved }) {
                             <input name="unit" value={form.unit} onChange={handleChange} placeholder="pcs, box, kg..." />
                         </div>
                         <div className={styles.formRow}>
-                            <label>Opening Quantity</label>
-                            <input type="number" min="0" name="quantity" value={form.quantity} onChange={handleChange} required />
+                            <label>{product ? "Quantity" : "Opening Quantity"}</label>
+                            <input type="number" min="0" step="1" name="quantity" value={form.quantity} onChange={handleChange} required />
                         </div>
                         <div className={styles.formRow}>
                             <label>Reorder Level</label>
-                            <input type="number" min="0" name="reorderLevel" value={form.reorderLevel} onChange={handleChange} required />
+                            <input type="number" min="0" step="1" name="reorderLevel" value={form.reorderLevel} onChange={handleChange} required />
                         </div>
                     </div>
 
-                    {error && <p style={{ color: "#b3261e", fontSize: 13 }}>{error}</p>}
+                    {error && <p className={styles.errorText}>{error}</p>}
 
                     <div className={styles.modalActions}>
                         <button type="button" className={styles.secondaryBtn} onClick={onClose}>Cancel</button>
-                        <button type="submit" className={styles.primaryBtn}>{product ? "Save Changes" : "Add Product"}</button>
+                        <button type="submit" className={styles.primaryBtn} disabled={saving}>{saving ? "Saving..." : product ? "Save Changes" : "Add Product"}</button>
                     </div>
                 </form>
             </div>
